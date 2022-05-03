@@ -104,7 +104,7 @@ def cache_path(archive, root_dir, build_id):
 
     root = root_dir or Path("~/.shiv").expanduser()
     name = Path(archive.filename).resolve().name
-    return root / f"{name}_{build_id}"
+    return root / "{}_{}".format(name, build_id)
 
 
 def extract_site_packages(archive, target_path, compile_pyc=False, compile_workers=0, force=False):
@@ -118,7 +118,7 @@ def extract_site_packages(archive, target_path, compile_pyc=False, compile_worke
     """
     parent = target_path.parent
     target_path_tmp = Path(parent, target_path.name + ".tmp")
-    lock = Path(parent, f".{target_path.name}_lock")
+    lock = str(Path(parent, ".{}_lock".format(target_path.name)))
 
     # If this is the first time that a pyz is being extracted, we'll need to create the ~/.shiv dir
     if not parent.exists():
@@ -134,7 +134,7 @@ def extract_site_packages(archive, target_path, compile_pyc=False, compile_worke
             for fileinfo in archive.infolist():
 
                 if fileinfo.filename.startswith("site-packages"):
-                    extracted = archive.extract(fileinfo.filename, target_path_tmp)
+                    extracted = archive.extract(fileinfo.filename, str(target_path_tmp))
 
                     # restore original permissions
                     os.chmod(extracted, fileinfo.external_attr >> 16)
@@ -210,7 +210,7 @@ def bootstrap():  # pragma: no cover
 
     # append site-packages using the stdlib blessed way of extending path
     # so as to handle .pth files correctly
-    site.addsitedir(site_packages)
+    site.addsitedir(str(site_packages))
 
     # reorder to place our site-packages before any others found
     sys.path = sys.path[:index] + sys.path[length:] + sys.path[index:length]

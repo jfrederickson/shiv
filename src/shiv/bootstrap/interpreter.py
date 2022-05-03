@@ -22,7 +22,7 @@ def execute_content(name, content, argv0=None):
     try:
         ast = compile(content, name, "exec", flags=0, dont_inherit=1)
     except SyntaxError:
-        raise RuntimeError(f"Unable to parse {name}. Is it a Python script? Syntax correct?")
+        raise RuntimeError("Unable to parse {}. Is it a Python script? Syntax correct?".format(name))
 
     sys.argv[0] = argv0
     globals_ = globals().copy()
@@ -60,7 +60,7 @@ def execute_interpreter():
                 try:
                     content = Path(arg).read_text()
                 except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
-                    raise RuntimeError(f"Could not open '{arg}' in the environment [{sys.argv[0]}]: {e}")
+                    raise RuntimeError("Could not open '{}' in the environment [{sys.argv[0]}]: {}".format(arg, e))
 
             sys.argv = args
             execute_content(arg, content)
